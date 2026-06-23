@@ -1,0 +1,22 @@
+# ============================================================================
+# ARCHIVO: requirements.txt
+# PROPÓSITO: Dependencias de Python para el backend
+# 
+# Para instalar: pip install -r requirements.txt
+# ============================================================================
+
+# Framework web
+Flask==3.0.0
+
+# Para parsear JSON
+python-json-logger==2.0.7
+
+# Para gestionar fechas/horas
+python-dateutil==2.8.2
+
+# CORS (Cross-Origin Resource Sharing) para frontend
+Flask-CORS==4.0.0
+
+# Utilidades
+requests==2.31.0
+

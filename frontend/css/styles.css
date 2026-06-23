@@ -1,0 +1,667 @@
+/* ================================================================
+   ARCHIVO: css/styles.css
+   PROPÓSITO: Estilos personalizados del frontend
+   
+   Define la apariencia visual del dashboard
+   ================================================================ */
+
+/* ================================================================
+   VARIABLES GLOBALES (CSS Custom Properties)
+   ================================================================ */
+
+:root {
+    /* Colores del tema CLARO (por defecto) */
+    --primary-color: #0d6efd;
+    --success-color: #198754;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --info-color: #0dcaf0;
+    --dark-color: #212529;
+    --light-color: #f8f9fa;
+    
+    /* Colores de fondo y texto (tema claro) */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --card-bg: #ffffff;
+    --card-border: #e9ecef;
+    
+    /* Espaciado */
+    --spacing-unit: 0.5rem;
+    
+    /* Sombras */
+    --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    --box-shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.15);
+    
+    /* Transiciones */
+    --transition: all 0.3s ease;
+}
+
+/* TEMA OSCURO */
+body.dark-theme {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --card-bg: #252525;
+    --card-border: #3a3a3a;
+    --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    --box-shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* ====== APLICAR TEMA OSCURO A TODOS LOS ELEMENTOS ====== */
+
+body.dark-theme {
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+}
+
+body.dark-theme .container,
+body.dark-theme .container-fluid {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+body.dark-theme h1, body.dark-theme h2, body.dark-theme h3, 
+body.dark-theme h4, body.dark-theme h5, body.dark-theme h6,
+body.dark-theme p, body.dark-theme label, body.dark-theme span,
+body.dark-theme a, body.dark-theme small {
+    color: var(--text-primary) !important;
+}
+
+/* Elementos de Bootstrap */
+body.dark-theme .bg-light {
+    background-color: var(--bg-secondary) !important;
+}
+
+body.dark-theme .text-light {
+    color: var(--text-primary) !important;
+}
+
+body.dark-theme .text-dark {
+    color: var(--text-primary) !important;
+}
+
+body.dark-theme .text-muted {
+    color: var(--text-secondary) !important;
+}
+
+body.dark-theme .badge {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+}
+
+body.dark-theme .badge.bg-success {
+    background-color: #28a745 !important;
+}
+
+body.dark-theme .badge.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+body.dark-theme .row {
+    background-color: transparent;
+}
+
+/* ================================================================
+   ESTILOS GLOBALES
+   ================================================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: var(--transition);
+}
+
+/* ================================================================
+   TARJETAS (CARDS)
+   ================================================================ */
+
+.card {
+    border: 1px solid var(--card-border);
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    box-shadow: var(--box-shadow);
+    transition: var(--transition);
+    border-radius: 8px;
+}
+
+.card:hover {
+    box-shadow: var(--box-shadow-hover);
+    transform: translateY(-2px);
+}
+
+.card-header {
+    border-bottom: 2px solid var(--card-border);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+/* ================================================================
+   TARJETAS DE MÉTRICAS
+   ================================================================ */
+
+.metric-card {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    border-left: 4px solid var(--primary-color);
+}
+
+body.dark-theme .metric-card {
+    background: linear-gradient(135deg, var(--card-bg) 0%, var(--bg-secondary) 100%);
+}
+
+.metric-card:hover {
+    border-left-color: var(--info-color);
+}
+
+.metric-card .card-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--dark-color);
+    margin: 0.5rem 0;
+}
+
+body.dark-theme .metric-card .card-title {
+    color: var(--text-primary);
+}
+
+.metric-card .card-subtitle {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+/* ================================================================
+   BARRAS DE PROGRESO
+   ================================================================ */
+
+.progress {
+    background-color: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+body.dark-theme .progress {
+    background-color: var(--bg-secondary);
+}
+
+.progress-bar {
+    transition: var(--transition);
+}================================================================ */
+
+#data-table {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+#data-table tbody tr:hover {
+    background-color: var(--bg-secondary) !important;
+}
+
+#data-table td {
+    vertical-align: middle;
+    padding: 0.5rem;
+    color: var(--text-primary);
+    border-color: var(--card-border);
+}
+
+#data-table .table-dark {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+body.dark-theme #data-table thead {
+    background-color: var(--bg-secondary) !importanty) !important
+}
+
+#data-table .table-dark {
+    background-color: var(--dark-color);
+}
+
+/* ================================================================
+   BOTONES
+   ================================================================ */
+
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
+    transition: var(--transition);
+    border: none;
+    color: var(--text-primary);
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+}
+
+.btn-success {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #157347;
+}
+
+.btn-outline-light {
+    color: var(--text-primary);
+    border-color: var(--text-primary);
+}
+
+.btn-outline-light:hover {
+    background-color: var(--bg-secondary);
+    border-color: var(--text-primary);
+    color: var(--text-primary);
+}
+
+/* ================================================================
+   ALERTAS
+   ================================================================ */
+
+.alert {
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.alert-info {
+    background-color: rgba(13, 202, 240, 0.15);
+    color: var(--text-primary);
+    border-left: 4px solid var(--info-color);
+}
+
+.alert-danger {
+    background-color: rgba(220, 53, 69, 0.15);
+    color: var(--text-primary);
+    border-left: 4px solid var(--danger-color);
+}
+
+body.dark-theme .alert-info {
+    background-color: rgba(13, 202, 240, 0.1);
+}
+
+body.dark-theme .alert-danger {
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+/* ================================================================
+   NAVBAR
+   ================================================================ */
+
+.navbar {
+    box-shadow: var(--box-shadow);
+}
+
+.navbar-brand {
+    font-size: 1.3rem;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+#connection-status {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+#connection-status.bg-success {
+    animation: pulse-green 2s infinite;
+}
+
+#connection-status.bg-danger {
+    animation: pulse-red 2s infinite;
+}
+
+/* ================================================================
+   ANIMACIONES
+   ================================================================ */
+
+@keyframes pulse-green {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+@keyframes pulse-red {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+/* ================================================================
+   GRÁFICOS
+   ================================================================ */
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin-bottom: 20px;
+}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+
+@media (max-width: 768px) {
+    .metric-card .card-title {
+        font-size: 1.5rem;
+    }
+    
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    #data-table {
+        font-size: 0.8rem;
+    }
+}
+
+/* ================================================================
+   SCROLLBAR PERSONALIZADO
+   ================================================================ */
+
+/* Para navegadores basados en Webkit */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--light-color);
+}
+
+body.dark-theme ::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #999;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #666;
+}
+
+body.dark-theme ::-webkit-scrollbar-thumb {
+    background: #555;
+}
+
+body.dark-theme ::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}
+
+/* ================================================================
+   FORMULARIOS
+   ================================================================ */
+
+.form-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.form-control {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--card-border);
+}
+
+.form-control:focus {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.form-check-label {
+    color: var(--text-primary);
+}
+
+.form-check-input {
+    background-color: var(--bg-secondary);
+    border-color: var(--card-border);
+}
+
+body.dark-theme .form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.sticky-top {
+    z-index: 100;
+}
+
+/* ================================================================
+   ESTILOS COMPLETOS TEMA OSCURO
+   ================================================================ */
+
+body.dark-theme * {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Contenedores */
+body.dark-theme .container-fluid,
+body.dark-theme .container {
+    background-color: transparent;
+}
+
+/* Textos en general */
+body.dark-theme .text-center,
+body.dark-theme .text-end,
+body.dark-theme .text-start {
+    color: var(--text-primary);
+}
+
+/* Bootstrap Row/Col */
+body.dark-theme .row {
+    background-color: transparent;
+}
+
+body.dark-theme [class*="col-"] {
+    background-color: transparent;
+}
+
+/* Inputs y textareas */
+body.dark-theme input[type="text"],
+body.dark-theme input[type="email"],
+body.dark-theme input[type="password"],
+body.dark-theme input[type="number"],
+body.dark-theme input[type="date"],
+body.dark-theme input[type="datetime-local"],
+body.dark-theme input[type="month"],
+body.dark-theme input[type="time"],
+body.dark-theme input[type="week"],
+body.dark-theme textarea,
+body.dark-theme select {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--card-border);
+}
+
+body.dark-theme input:focus,
+body.dark-theme textarea:focus,
+body.dark-theme select:focus {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Links */
+body.dark-theme a {
+    color: var(--primary-color);
+}
+
+body.dark-theme a:hover {
+    color: #0b5ed7;
+}
+
+/* Borders */
+body.dark-theme .border {
+    border-color: var(--card-border) !important;
+}
+
+body.dark-theme .border-top {
+    border-top-color: var(--card-border) !important;
+}
+
+body.dark-theme .border-bottom {
+    border-bottom-color: var(--card-border) !important;
+}
+
+body.dark-theme .border-start {
+    border-left-color: var(--card-border) !important;
+}
+
+body.dark-theme .border-end {
+    border-right-color: var(--card-border) !important;
+}
+
+/* Dropdowns y Popovers */
+body.dark-theme .dropdown-menu {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    border-color: var(--card-border);
+}
+
+body.dark-theme .dropdown-item {
+    color: var(--text-primary);
+}
+
+body.dark-theme .dropdown-item:hover,
+body.dark-theme .dropdown-item:focus {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+body.dark-theme .dropdown-divider {
+    border-color: var(--card-border);
+}
+
+/* Modals */
+body.dark-theme .modal-content {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    border-color: var(--card-border);
+}
+
+body.dark-theme .modal-header {
+    border-color: var(--card-border);
+    background-color: var(--bg-secondary);
+}
+
+body.dark-theme .modal-footer {
+    border-color: var(--card-border);
+    background-color: var(--bg-secondary);
+}
+
+body.dark-theme .btn-close {
+    filter: invert(1);
+}
+
+/* Tabs y Navs */
+body.dark-theme .nav-tabs {
+    border-color: var(--card-border);
+}
+
+body.dark-theme .nav-tabs .nav-link {
+    color: var(--text-secondary);
+}
+
+body.dark-theme .nav-tabs .nav-link:hover {
+    color: var(--text-primary);
+    border-color: var(--card-border);
+}
+
+body.dark-theme .nav-tabs .nav-link.active {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    border-color: var(--card-border) var(--card-border) var(--card-bg);
+}
+
+/* Pagination */
+body.dark-theme .pagination .page-link {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--card-border);
+}
+
+body.dark-theme .pagination .page-link:hover {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    border-color: var(--card-border);
+}
+
+body.dark-theme .pagination .page-item.active .page-link {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Breadcrumbs */
+body.dark-theme .breadcrumb {
+    background-color: var(--bg-secondary);
+}
+
+body.dark-theme .breadcrumb-item {
+    color: var(--text-secondary);
+}
+
+body.dark-theme .breadcrumb-item.active {
+    color: var(--text-primary);
+}
+
+body.dark-theme .breadcrumb-item a {
+    color: var(--primary-color);
+}
+
+/* Gráficos Chart.js */
+body.dark-theme canvas {
+    filter: brightness(0.9);
+}
+
+/* Legendas y elementos de gráficos */
+body.dark-theme .chart-legend {
+    color: var(--text-primary);
+}

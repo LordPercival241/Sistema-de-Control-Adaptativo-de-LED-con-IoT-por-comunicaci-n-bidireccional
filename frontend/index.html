@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IFE25A Tópicos Especiales de Ingeniería Física IV - Entregable IV - Transmisión de datos</title>
+    
+    <!-- Bootstrap CSS para estilos base -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- ================================================================ -->
+    <!-- NAVEGACIÓN -->
+    <!-- ================================================================ -->
+    <nav class="navbar navbar-dark bg-dark navbar-expand-lg sticky-top">
+        <div class="container-fluid">
+            <span class="navbar-brand">
+                <strong>Sistema PID - Daylight Harvesting</strong>
+            </span>
+            <div class="ms-auto d-flex gap-3 align-items-center">
+                <button id="theme-toggle" class="btn btn-outline-light btn-sm" title="Cambiar tema">
+                    <span id="theme-icon">Dia</span>
+                </button>
+                <span id="connection-status" class="badge bg-danger">
+                    Desconectado
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ================================================================ -->
+    <!-- CONTENEDOR PRINCIPAL -->
+    <!-- ================================================================ -->
+    <div class="container-fluid mt-4">
+        
+        <!-- ROW 1: Métricas en tiempo real -->
+        <div class="row mb-4">
+            <!-- Setpoint -->
+            <div class="col-md-3 mb-3">
+                <div class="card metric-card">
+                    <div class="card-body">
+                        <h6 class="card-subtitle text-muted">Setpoint</h6>
+                        <h2 class="card-title" id="setpoint-value">--</h2>
+                        <small class="text-muted">Lux objetivo</small>
+                        <div class="mt-2">
+                            <small id="setpoint-status" class="text-success">--</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lux Reales -->
+            <div class="col-md-3 mb-3">
+                <div class="card metric-card">
+                    <div class="card-body">
+                        <h6 class="card-subtitle text-muted">Lux Reales</h6>
+                        <h2 class="card-title" id="lux-value">--</h2>
+                        <small class="text-muted">Iluminación actual (Lux)</small>
+                        <div class="progress mt-2" style="height: 8px;">
+                            <div id="lux-bar" class="progress-bar bg-warning" 
+                                 role="progressbar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PWM Output -->
+            <div class="col-md-3 mb-3">
+                <div class="card metric-card">
+                    <div class="card-body">
+                        <h6 class="card-subtitle text-muted">PWM Output</h6>
+                        <h2 class="card-title" id="pwm-value">--</h2>
+                        <small class="text-muted">0-255 PWM</small>
+                        <div class="progress mt-2" style="height: 8px;">
+                            <div id="pwm-bar" class="progress-bar bg-info" 
+                                 role="progressbar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estadísticas -->
+            <div class="col-md-3 mb-3">
+                <div class="card metric-card">
+                    <div class="card-body">
+                        <h6 class="card-subtitle text-muted">Estadísticas</h6>
+                        <h5 id="stats-count">0 registros</h5>
+                        <small class="text-muted">
+                            <div>Prom: <span id="stats-avg">--</span> Lux</div>
+                            <div>Rango: <span id="stats-range">--</span> Lux</div>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 2: Gráfico PID -->
+        <div class="row mb-4">
+            <!-- Gráfico de Control PID -->
+            <div class="col-lg-12 mb-3">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">Control PID - Daylight Harvesting (Últimas 10 lecturas)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div style="position: relative; height: 350px;">
+                            <canvas id="chart-pid"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 3: Controles y tabla de datos -->
+        <div class="row">
+            <!-- Controles -->
+            <div class="col-lg-4 mb-3">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">Controles</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Botón actualizar -->
+                        <button id="btn-refresh" class="btn btn-primary w-100 mb-2">
+                            Actualizar Datos
+                        </button>
+
+                        <!-- Botón exportar CSV -->
+                        <button id="btn-export" class="btn btn-success w-100 mb-2">
+                            Exportar CSV
+                        </button>
+
+                        <!-- Controles LED -->
+                        <h6 class="mt-3 mb-2 text-muted">Control de Iluminación</h6>
+                        <div class="btn-group w-100 mb-3" role="group">
+                            <button id="btn-led-auto" class="btn btn-outline-success active">Auto</button>
+                            <button id="btn-led-off" class="btn btn-outline-danger">Apagar</button>
+                        </div>
+                        
+                        <hr>
+                        <!-- Intervalo de actualización -->
+                        <label class="form-label mt-3">
+                            Intervalo de actualización (segundos):
+                        </label>
+                        <input id="refresh-interval" type="number" class="form-control mb-2" 
+                               value="5" min="1" max="60">
+
+                        <!-- Estado de actualización automática -->
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" 
+                                   id="auto-refresh" checked>
+                            <label class="form-check-label" for="auto-refresh">
+                                Actualizar automáticamente
+                            </label>
+                        </div>
+
+                        <!-- Logs -->
+                        <div class="alert alert-info">
+                            <small id="log-text">Esperando conexión...</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de últimos datos -->
+            <div class="col-lg-8 mb-3">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">Últimos Registros (Últimas 10)</h5>
+                    </div>
+                    <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                        <table class="table table-sm table-striped" id="data-table">
+                            <thead class="table-dark sticky-top">
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th class="text-end">Setpoint (Lux)</th>
+                                    <th class="text-end">Lux Reales</th>
+                                    <th class="text-end">PWM Output</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body">
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">Sin datos</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- SCRIPTS -->
+    <!-- ================================================================ -->
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Aplicación principal -->
+    <script src="js/app.js"></script>
+</body>
+</html>

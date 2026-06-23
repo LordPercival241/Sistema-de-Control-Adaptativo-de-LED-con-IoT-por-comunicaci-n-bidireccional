@@ -1,0 +1,51 @@
+# ============================================================================
+# ARCHIVO: .gitignore
+# PROPÓSITO: Especificar archivos y carpetas a ignorar en Git
+# ============================================================================
+
+# Entorno virtual de Python
+venv/
+env/
+.venv
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Datos y CSV
+data/*.csv
+*.csv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+.env
+.env.local
+
+# Logs
+*.log
+logs/
+
+# Compilación ESP32
+firmware/.pio/
+firmware/.vscode/
+firmware/build/
+
+# Dependencias Node (si se usa en futuro)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Archivos temporales
+*.tmp
+*.temp
+~*
+
