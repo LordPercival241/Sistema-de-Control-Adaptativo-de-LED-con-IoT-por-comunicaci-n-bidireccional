@@ -6,6 +6,7 @@
 # ============================================================================
 
 from typing import Dict, Any, Tuple
+from datetime import datetime
 import config
 
 def validate_sensor_data(data: Dict[str, Any]) -> Tuple[bool, str]:
@@ -19,13 +20,17 @@ def validate_sensor_data(data: Dict[str, Any]) -> Tuple[bool, str]:
     RETORNA: Tupla (válido: bool, mensaje: str)
     
     VALIDACIONES:
-    - Campos requeridos presentes
+    - Campos requeridos presentes (timestamp es opcional, se genera si falta)
     - Tipos de datos correctos
     - Valores dentro de rangos válidos
     """
     
+    # Si no viene timestamp, generarlo automáticamente
+    if 'timestamp' not in data or not data['timestamp']:
+        data['timestamp'] = datetime.now().isoformat()
+    
     # Lista de campos requeridos
-    required_fields = ['timestamp', 'setpoint', 'lux', 'pwm_output']
+    required_fields = ['setpoint', 'lux', 'pwm_output']
     
     # Verificar que todos los campos están presentes
     for field in required_fields:

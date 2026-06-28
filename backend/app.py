@@ -5,10 +5,14 @@
 # Punto de entrada del backend - configura Flask y todos los módulos
 # ============================================================================
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 import config
+import os
 from routes.sensor_routes import sensor_bp
+
+# Ruta absoluta a la carpeta del frontend
+FRONTEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'frontend')
 
 # ============================================================================
 # CREAR APLICACIÓN FLASK
@@ -27,8 +31,8 @@ def create_app():
     - Centraliza toda la configuración
     """
     
-    # Crear instancia de Flask
-    app = Flask(__name__)
+    # Crear instancia de Flask que también sirve el frontend
+    app = Flask(__name__, static_folder=FRONTEND_DIR, static_url_path='')
     
     # Configurar CORS (Cross-Origin Resource Sharing)
     # Permite que el frontend acceda a la API desde localhost
@@ -55,21 +59,9 @@ def create_app():
     def index():
         """
         ENDPOINT: GET /
-        PROPÓSITO: Raíz de la aplicación - información general
+        PROPÓSITO: Servir el dashboard del frontend
         """
-        return jsonify({
-            'message': 'Sistema IoT - Backend de Control de LED',
-            'version': config.BACKEND_VERSION,
-            'environment': config.ENVIRONMENT,
-            'status': 'online',
-            'endpoints': {
-                'health': '/api/health',
-                'receive_data': 'POST /api/sensor/data',
-                'get_latest': 'GET /api/data/latest',
-                'get_range': 'GET /api/data/range?from=X&to=Y',
-                'statistics': 'GET /api/stats'
-            }
-        }), 200
+        return send_from_directory(FRONTEND_DIR, 'index.html')
     
     # ========================================================================
     # MANEJO DE ERRORES GLOBAL

@@ -9,6 +9,7 @@
 
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <ArduinoJson.h>
 
 // ---------------- Configuraciones de Hardware ----------------
 #define PIN_SENSOR_LDR 34   
@@ -156,25 +157,37 @@ void loop() {
     http.begin(BACKEND_URL);
     http.addHeader("Content-Type", "application/json");
 
-    // Construcción del JSON
-    // Se omite timestamp para que el backend lo asigne automáticamente usando str(datetime.now())
-    String json_data = "{";
-    json_data += "\"setpoint\":" + String(SETPOINT_LUX, 1) + ",";
-    json_data += "\"lux\":" + String(lux_actuales, 2) + ",";
-    json_data += "\"pwm_output\":" + String(pwm_final) + ",";
-    json_data += "\"device_id\":\"ESP32_PID\"";
-    json_data += "}";
+    // Construcción del JSON usando ArduinoJson
+    StaticJsonDocument<200> doc;
+    doc["setpoint"] = (double)((int)(SETPOINT_LUX * 10)) / 10.0; // Redondear a 1 decimal
+    doc["lux"] = (double)((int)(lux_actuales * 100)) / 100.0; // Redondear a 2 decimales
+    doc["pwm_output"] = pwm_final;
+    doc["device_id"] = "ESP32_PID";
+    
+    String json_data;
+    serializeJson(doc, json_data);
 
     int http_response_code = http.POST(json_data);
 
     if (http_response_code > 0) {
       String response = http.getString();
       
-      // Analizar la respuesta del backend buscando la orden del LED
-      if (response.indexOf("\"led_command\":\"OFF\"") >= 0 || response.indexOf("\"led_command\": \"OFF\"") >= 0) {
-        led_apagado_remoto = true;
-      } else if (response.indexOf("\"led_command\":\"AUTO\"") >= 0 || response.indexOf("\"led_command\": \"AUTO\"") >= 0) {
-        led_apagado_remoto = false;
+      // Parsear la respuesta JSON del backend
+      StaticJsonDocument<256> responseDoc;
+      DeserializationError error = deserializeJson(responseDoc, response);
+      
+      if (!error) {
+        if (responseDoc.containsKey("led_command")) {
+          String command = responseDoc["led_command"].as<String>();
+          if (command == "OFF") {
+            led_apagado_remoto = true;
+          } else if (command == "AUTO") {
+            led_apagado_remoto = false;
+          }
+        }
+      } else {
+        Serial.print("[JSON] Error al parsear: ");
+        Serial.println(error.c_str());
       }
       
     } else {

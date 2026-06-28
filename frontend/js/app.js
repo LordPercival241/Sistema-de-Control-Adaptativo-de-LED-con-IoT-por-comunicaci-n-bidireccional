@@ -76,12 +76,12 @@ function initTheme() {
  */
 function setTheme(theme) {
     const body = document.body;
-    const isDark = theme === 'dark';
+    const isLight = theme === 'light';
     
-    if (isDark) {
-        body.classList.add('dark-theme');
+    if (isLight) {
+        body.classList.add('light-theme');
     } else {
-        body.classList.remove('dark-theme');
+        body.classList.remove('light-theme');
     }
     
     localStorage.setItem('theme', theme);
@@ -107,8 +107,10 @@ function toggleTheme() {
  */
 function updateThemeIcon() {
     const themeIcon = document.getElementById('theme-icon');
-    const isDarkTheme = document.body.classList.contains('dark-theme');
-    themeIcon.textContent = isDarkTheme ? 'Noche' : 'Día';
+    if (themeIcon) {
+        const isLight = document.body.classList.contains('light-theme');
+        themeIcon.textContent = isLight ? 'Dia' : 'Noche';
+    }
 }
 
 // Intervalo de actualización automática
@@ -230,24 +232,33 @@ function initializeCharts() {
 
 function setupEventListeners() {
     // Botón actualizar
-    document.getElementById('btn-refresh').addEventListener('click', function() {
-        this.textContent = 'Actualizando...';
-        this.disabled = true;
-        
-        refreshData().then(() => {
-            this.textContent = 'Actualizar Datos';
-            this.disabled = false;
+    const btnRefresh = document.getElementById('btn-refresh');
+    if (btnRefresh) {
+        btnRefresh.addEventListener('click', function() {
+            this.textContent = 'Actualizando...';
+            this.disabled = true;
+            
+            refreshData().then(() => {
+                this.textContent = 'ACTUALIZAR DATOS';
+                this.disabled = false;
+            });
         });
-    });
+    }
     
     // Botón exportar
-    document.getElementById('btn-export').addEventListener('click', exportToCSV);
+    const btnExport = document.getElementById('btn-export');
+    if (btnExport) {
+        btnExport.addEventListener('click', exportToCSV);
+    }
     
     // Botón cambiar tema
-    document.getElementById('theme-toggle').addEventListener('click', function() {
-        toggleTheme();
-        log('Tema cambiado');
-    });
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function() {
+            toggleTheme();
+            log('Tema cambiado');
+        });
+    }
     
     // Controles LED
     const btnLedAuto = document.getElementById('btn-led-auto');
@@ -256,28 +267,34 @@ function setupEventListeners() {
     if (btnLedOff) btnLedOff.addEventListener('click', () => setLedMode('OFF'));
     
     // Checkbox actualización automática
-    document.getElementById('auto-refresh').addEventListener('change', function() {
-        if (this.checked) {
-            startAutoRefresh();
-            log('Actualización automática habilitada');
-        } else {
-            stopAutoRefresh();
-            log('Actualización automática deshabilitada');
-        }
-    });
+    const autoRefresh = document.getElementById('auto-refresh');
+    if (autoRefresh) {
+        autoRefresh.addEventListener('change', function() {
+            if (this.checked) {
+                startAutoRefresh();
+                log('Actualización automática habilitada');
+            } else {
+                stopAutoRefresh();
+                log('Actualización automática deshabilitada');
+            }
+        });
+    }
     
     // Intervalo de actualización
-    document.getElementById('refresh-interval').addEventListener('change', function() {
-        const interval = parseInt(this.value);
-        if (interval >= 1 && interval <= 60) {
-            // Reiniciar intervalo con nuevo valor
-            if (document.getElementById('auto-refresh').checked) {
-                stopAutoRefresh();
-                startAutoRefresh();
-                log(`Intervalo de actualización: ${interval}s`);
+    const refreshInterval = document.getElementById('refresh-interval');
+    if (refreshInterval) {
+        refreshInterval.addEventListener('change', function() {
+            const interval = parseInt(this.value);
+            if (interval >= 1 && interval <= 60) {
+                const autoRefresh = document.getElementById('auto-refresh');
+                if (autoRefresh && autoRefresh.checked) {
+                    stopAutoRefresh();
+                    startAutoRefresh();
+                    log(`Intervalo de actualización: ${interval}s`);
+                }
             }
-        }
-    });
+        });
+    }
 }
 
 // ============================================================================
@@ -323,9 +340,18 @@ async function refreshData() {
         // Paso 6: Obtener estadísticas
         await updateStatistics();
         
-        // Actualizar estado de conexión
-        updateConnectionStatus(true);
+        // Actualizar estado de conexión basado en la edad del último dato
+        const lastDataTime = new Date(latestData.timestamp);
+        const currentTime = new Date();
+        const diffSeconds = (currentTime - lastDataTime) / 1000;
         
+        if (isNaN(diffSeconds) || diffSeconds > 15) {
+            updateConnectionStatus(false);
+            // Opcional: mostrar un log advirtiendo
+            // log(`Desconectado: último dato hace ${Math.round(diffSeconds)}s`);
+        } else {
+            updateConnectionStatus(true);
+        }
         log(`Exito: Datos actualizados (${sensorDataHistory.length} registros)`);
         
     } catch (error) {
@@ -407,32 +433,34 @@ function updateCharts(dataArray) {
 // ============================================================================
 
 function updateDataTable(dataArray) {
-    const tableBody = document.getElementById('table-body');
-    tableBody.innerHTML = '';  // Limpiar tabla
-    
-    // Mostrar datos en orden inverso (más recientes primero)
-    // Usamos una copia del array para no mutar el original
-    [...dataArray].reverse().forEach(data => {
-        const row = document.createElement('tr');
+    const tableBody = document.getElementById('data-table-body');
+    if (tableBody) {
+        tableBody.innerHTML = '';  // Limpiar tabla
         
-        // Formatear timestamp
-        let timestamp = data.timestamp;
-        try {
-            const date = new Date(timestamp);
-            timestamp = date.toLocaleString('es-ES');
-        } catch (e) {
-            // Si hay error, usar el timestamp como está
-        }
-        
-        row.innerHTML = `
-            <td><small>${timestamp}</small></td>
-            <td class="text-end"><strong>${data.setpoint.toFixed(1)}</strong></td>
-            <td class="text-end"><strong>${data.lux.toFixed(1)}</strong></td>
-            <td class="text-end"><strong>${data.pwm_output}</strong></td>
-        `;
-        
-        tableBody.appendChild(row);
-    });
+        // Mostrar datos en orden inverso (más recientes primero)
+        // Usamos una copia del array para no mutar el original
+        [...dataArray].reverse().forEach(data => {
+            const row = document.createElement('tr');
+            
+            // Formatear timestamp
+            let timestamp = data.timestamp;
+            try {
+                const date = new Date(timestamp);
+                timestamp = date.toLocaleString('es-ES');
+            } catch (e) {
+                // Si hay error, usar el timestamp como está
+            }
+            
+            row.innerHTML = `
+                <td><small>${timestamp}</small></td>
+                <td><strong>${data.setpoint.toFixed(1)}</strong></td>
+                <td><strong>${data.lux.toFixed(1)}</strong></td>
+                <td><strong>${data.pwm_output}</strong></td>
+            `;
+            
+            tableBody.appendChild(row);
+        });
+    }
 }
 
 // ============================================================================
@@ -451,14 +479,20 @@ async function updateStatistics() {
         const stats = result.statistics;
         
         // Actualizar elementos de estadísticas
-        document.getElementById('stats-count').textContent = 
-            `${stats.total_records} registros`;
+        const statTotal = document.getElementById('stat-total');
+        if (statTotal) {
+            statTotal.textContent = stats.total_records;
+        }
         
-        document.getElementById('stats-avg').textContent = 
-            `${stats.avg_lux.toFixed(1)}`;
+        const statAvgLux = document.getElementById('stat-avg-lux');
+        if (statAvgLux) {
+            statAvgLux.textContent = `${stats.avg_lux.toFixed(1)} Lux`;
+        }
         
-        document.getElementById('stats-range').textContent = 
-            `${stats.min_lux.toFixed(1)} - ${stats.max_lux.toFixed(1)}`;
+        const statAvgPwm = document.getElementById('stat-avg-pwm');
+        if (statAvgPwm) {
+            statAvgPwm.textContent = stats.avg_pwm_output.toFixed(0);
+        }
         
     } catch (error) {
         console.error('Error obteniendo estadísticas:', error);
@@ -471,13 +505,14 @@ async function updateStatistics() {
 
 function updateConnectionStatus(connected) {
     const statusElement = document.getElementById('connection-status');
+    if (!statusElement) return;
     
     if (connected) {
-        statusElement.textContent = 'Conectado';
-        statusElement.className = 'badge bg-success';
+        statusElement.textContent = 'ESTADO: CONECTADO';
+        statusElement.className = 'status-badge connected';
     } else {
-        statusElement.textContent = 'Desconectado';
-        statusElement.className = 'badge bg-danger';
+        statusElement.textContent = 'ESTADO: DESCONECTADO';
+        statusElement.className = 'status-badge disconnected';
     }
 }
 
@@ -490,7 +525,8 @@ function startAutoRefresh() {
     stopAutoRefresh();
     
     // Obtener intervalo configurado
-    const interval = parseInt(document.getElementById('refresh-interval').value);
+    const refreshInterval = document.getElementById('refresh-interval');
+    const interval = refreshInterval ? parseInt(refreshInterval.value) : CONFIG.DEFAULT_REFRESH_INTERVAL;
     
     // Crear nuevo intervalo (convertir segundos a milisegundos)
     autoRefreshInterval = setInterval(refreshData, interval * 1000);
